@@ -2,21 +2,21 @@ import passport from "passport";
 
 export async function loginUser(req, res, next) {
   passport.authenticate("local", (err, user, info) => {
+    if (info) {
+      // error message is in info
+      return res.status(400).json(info);
+    }
     if (err) {
       return next(err);
     }
-    if (!user && info.notFound) {
-      return res.status(404).json({ needSignUp: true });
+    if (!user) {
+      return res.status(400).json({ message: "failed" });
     }
-    if (!user && info.invalid) {
-      return res.status(401).json({ message: "Invalid username or password" });
-    }
-    // user exists.
-    req.login(user, (err) => {
+    req.logIn(user, function (err) {
       if (err) {
         return next(err);
       }
-      return res.status(200).json({ login: true });
+      return res.json({ message: "success" });
     });
   })(req, res, next);
 }

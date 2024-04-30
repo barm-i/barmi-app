@@ -8,8 +8,11 @@ passport.use(
     async (username, password, done) => {
       try {
         const user = await User.findOne({ username });
-        if (!user || !(await user.isValidPassword(password))) {
-          return done(null, false, { message: "Invalid username or password" });
+        if (!user) {
+          return done(null, false, { message: "not-found" });
+        }
+        if (!(await user.isValidPassword(password))) {
+          return done(null, false, { message: "failed" });
         }
         return done(null, user);
       } catch (err) {
@@ -23,8 +26,11 @@ passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser((id, done) => {
-  User.findById(id, (err, user) => {
-    done(err, user);
-  });
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err);
+  }
 });

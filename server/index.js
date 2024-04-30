@@ -8,6 +8,7 @@ import passport from "passport";
 import { Server } from "socket.io";
 import { createServer } from "http";
 // internal modules
+import connectMongoDB from "./src/db/connect.js";
 import { ensureAuthenticated } from "./src/middleware/auth.js";
 // api router
 import { apiRouter } from "./src/routes/api.js";
@@ -55,7 +56,7 @@ app.get("/bad-auth", (req, res) => {
 
 async function startServer() {
   try {
-    // await connectMongoDB(DB_URI);
+    await connectMongoDB(DB_URI);
     app.listen(PORT, () => {
       console.log(`server is running on port ${PORT}`);
     });
