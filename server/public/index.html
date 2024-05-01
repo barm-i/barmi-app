@@ -1,11 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
+  </head>
+  <body>
     BARMI SERVER
-</body>
+  </body>
+  <script type="module">
+    import { io } from "https://cdn.socket.io/4.7.5/socket.io.esm.min.js";
+    const socket = io("http://localhost:8080");
+
+    socket.on("lobby", () => {
+      console.log("Connected to server, welcome!");
+    });
+
+    socket.on("open_game", (arg, callback) => {
+      const res = alert("게임이 시작될 예정입니다. 참여하시겠습니까?"); // TODO : frontend logic
+
+      callback("yes");
+    });
+  </script>
 </html>
