@@ -39,7 +39,11 @@ app.use(
     },
   })
 );
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json());
