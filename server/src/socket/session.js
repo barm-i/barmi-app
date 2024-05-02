@@ -6,6 +6,15 @@ function startGameSession() {
   // TODO : implement game logic.e
 }
 
+function insertUserToGame() {}
+
+function enterLobby(socket) {
+  socket.emit("lobby"); // TODO : delete this later
+  lobby.push(socket);
+
+  socket.on("game:join", insertUserToGame);
+}
+
 // invite players to game session.
 function openGameSession() {
   lobby.forEach((socket) => {
@@ -22,11 +31,6 @@ function openGameSession() {
   setTimeout(() => {
     startGameSession();
   }, 1000 * 60);
-}
-
-function enterLobby(socket) {
-  socket.emit("lobby"); // TODO : delete this later
-  lobby.push(socket);
 }
 
 setInterval(() => {
