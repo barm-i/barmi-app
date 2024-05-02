@@ -1,6 +1,5 @@
 import './style.css'
 import javascriptLogo from './javascript.svg'
-import viteLogo from '/vite.svg'
 import { setupCounter } from './counter.js'
 
 document.querySelector('#app').innerHTML = `
@@ -22,3 +21,8 @@ document.querySelector('#app').innerHTML = `
 `
 
 setupCounter(document.querySelector('#counter'))
+
+const startPracticeBtn = document.getElementById('practice-btn');
+startPracticeBtn.addEventListener('click', () => {
+  window.location.href = 'practice-page.html'; 
+});
