@@ -16,10 +16,14 @@
       console.log("Connected to server, welcome!");
     });
 
-    socket.on("open_game", (arg, callback) => {
+    socket.on("game:open", (arg, callback) => {
       const res = alert("게임이 시작될 예정입니다. 참여하시겠습니까?"); // TODO : frontend logic
 
       callback("yes");
+    });
+
+    socket.on("game:start", (data) => {
+      console.log(data);
     });
   </script>
 </html>

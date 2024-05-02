@@ -41,7 +41,7 @@ app.use(
 );
 app.use(
   cors({
-    origin: "http://localhost:5174",
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
@@ -71,7 +71,7 @@ app.get("/bad-auth", (req, res) => {
 // socket.io
 // handler after connection
 io.on("connection", (socket) => {
-  enterLobby(socket);
+  enterLobby(socket, io);
 });
 
 async function startServer() {
