@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import passport from "passport";
+import cors from "cors";
 import { Server } from "socket.io";
 import { createServer } from "http";
 // internal modules
@@ -38,6 +39,7 @@ app.use(
     },
   })
 );
+app.use(cors());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json());
@@ -62,7 +64,7 @@ app.get("/bad-auth", (req, res) => {
 });
 
 // socket.io
-// start io server
+// handler after connection
 io.on("connection", (socket) => {
   enterLobby(socket);
 });

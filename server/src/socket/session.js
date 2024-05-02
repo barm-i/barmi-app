@@ -3,7 +3,7 @@ const TEN_MINUTES = 1000 * 60 * 10;
 
 // start game session
 function startGameSession() {
-  // TODO : implement game logic.
+  // TODO : implement game logic.e
 }
 
 // invite players to game session.
