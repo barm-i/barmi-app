@@ -25,7 +25,12 @@ const DB_URI = process.env.DB_URI;
 // server instance
 const app = express(); // express app for API
 const httpServer = createServer(app); // http server for socket.io
-const io = new Server(httpServer); // for bi-directional communication
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+  },
+}); // for bi-directional communication
 
 // set middleware
 app.use(
