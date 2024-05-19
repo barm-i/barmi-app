@@ -16,7 +16,7 @@ export async function loginUser(req, res, next) {
       if (err) {
         return next(err);
       }
-      return res.json({ message: "success" });
+      return res.json({ message: "success", fontstyle: user.fontstyle });
     });
   })(req, res, next);
 }

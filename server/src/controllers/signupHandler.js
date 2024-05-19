@@ -25,3 +25,20 @@ export async function signupUser(req, res, next) {
     next(err);
   }
 }
+
+export async function storeFontStyle(req, res, next) {
+  const { fontstyle } = req.body;
+
+  // Get the user from the database
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  // Update the user's font style
+  user.fontstyle = fontstyle;
+  await user.save();
+
+  // Send a success message as the response
+  res.json({ message: "Font style updated successfully" });
+}

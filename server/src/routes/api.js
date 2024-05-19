@@ -1,8 +1,9 @@
 import { Router } from "express";
 // controllers
 import { loginUser } from "../controllers/loginHandler.js";
-import { signupUser } from "../controllers/signupHandler.js";
+import { signupUser, storeFontStyle } from "../controllers/signupHandler.js";
 import { uploader } from "../controllers/imageHandler.js";
+import { ensureAuthenticated } from "../middleware/auth.js";
 
 // global router for api routes
 const router = Router();
@@ -21,6 +22,7 @@ export function apiRouter() {
       res.sendStatus(200);
     }
   );
+  router.post("/store_fontstyle", ensureAuthenticated, storeFontStyle);
 
   return router;
 }
