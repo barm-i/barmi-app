@@ -13,3 +13,5 @@
 .pnp.*
 .env
 confidentials
+
+node_modules/

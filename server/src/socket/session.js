@@ -39,6 +39,6 @@ function openGameSession() {
 
 setInterval(() => {
   openGameSession();
-}, TEN_MINUTES);
+}, ONE_MINUTE / 2);
 
 export { enterLobby };
