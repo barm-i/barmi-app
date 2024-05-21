@@ -3,7 +3,6 @@ import { User } from "../db/models/user.js";
 
 export async function requestRankRows(req, res, next) {
   const rows = await Leaderboard.getAllRows();
-=
   res.status(200).json({ rows });
 }
 
