@@ -7,7 +7,7 @@ import MongoStore from "connect-mongo";
 import passport from "passport";
 import cors from "cors";
 import { Server } from "socket.io";
-import { createServer } from "http";
+import http from "http";
 // internal modules
 import connectMongoDB from "./src/db/connect.js";
 import { ensureAuthenticated } from "./src/middleware/auth.js";
@@ -24,7 +24,7 @@ const DB_URI = process.env.DB_URI;
 
 // server instance
 const app = express(); // express app for API
-const httpServer = createServer(app); // http server for socket.io
+const httpServer = http.createServer(app); // https server for socket.io
 const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:5173",

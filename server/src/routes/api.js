@@ -4,6 +4,10 @@ import { loginUser } from "../controllers/loginHandler.js";
 import { signupUser, storeFontStyle } from "../controllers/signupHandler.js";
 import { uploader } from "../controllers/imageHandler.js";
 import { ensureAuthenticated } from "../middleware/auth.js";
+import {
+  requestRankRows,
+  updateMyPoint,
+} from "../controllers/leaderBoardHandler.js";
 
 // global router for api routes
 const router = Router();
@@ -13,6 +17,8 @@ export function apiRouter() {
   router.get("/", (req, res) => {
     res.json({ message: "api route" });
   });
+
+  // Auth
   router.post("/login", loginUser);
   router.post("/signup", signupUser);
   router.post(
@@ -22,7 +28,13 @@ export function apiRouter() {
       res.sendStatus(200);
     }
   );
+
+  // User info
   router.post("/store_fontstyle", ensureAuthenticated, storeFontStyle);
+
+  // Leaderboard
+  router.get("/leaderboard/rows", requestRankRows);
+  router.post("/leaderboard/update_me", ensureAuthenticated, updateMyPoint);
 
   return router;
 }

@@ -1,4 +1,5 @@
 import { User } from "../db/models/user.js";
+import { Leaderboard } from "../db/models/leaderboard.js";
 
 export async function signupUser(req, res, next) {
   const { username, password } = req.body;
@@ -13,6 +14,12 @@ export async function signupUser(req, res, next) {
     // Create a new user
     const user = new User({ username, password });
     await user.save();
+
+    // Insert a new row in the leaderboard
+    await Leaderboard.insertRow(username, 0, 0);
+
+    // Reevaluate ranks
+    await Leaderboard.reevaluateRanks();
 
     // Start a session for the user
     req.login(user, (err) => {
@@ -40,5 +47,5 @@ export async function storeFontStyle(req, res, next) {
   await user.save();
 
   // Send a success message as the response
-  res.json({ message: "Font style updated successfully" });
+  res.status(200).json({ message: "font updated" });
 }
