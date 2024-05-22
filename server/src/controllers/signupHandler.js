@@ -20,6 +20,9 @@ export async function signupUser(req, res, next) {
 
     // Reevaluate ranks
     await Leaderboard.reevaluateRanks();
+
+    // Start a session for the user
+    return res.status(201).json({ message: "Signed up successfully" });
   } catch (err) {
     next(err);
   }
