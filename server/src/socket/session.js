@@ -47,23 +47,15 @@ function measureRttMilliseconds(socket) {
  * event listener
  */
 
-function listenGameExit() {
-  io.on("game:exit", (socket) => {
-    socket.leave("gamesesison");
-  });
-}
-
 // ----------------------------------------
 
 // start game session
 function startGameSession() {
   // TODO : implement game logic
-  console.log("game session started.");
+  console.log("game started.");
   io.in("gamesession").emit("game:start", {
     message: "Welcome to game session!",
   });
-
-  listenGameExit();
 
   const gameDuration = ONE_MINUTE;
   let inverseElapsedTime = gameDuration;
@@ -86,6 +78,7 @@ function startGameSession() {
     // 게임 종료
     // TODO : undefined error 발생
     io.in("gamesession").emit("game:end");
+    console.log("[log] : game end");
     //TODO : 여기서 어떤 로직 ? 프론트 <-> 백 <-> ai 점수 업데이트 필요 , 랭크 업데이트, 피드백 전송
   }, gameDuration);
 }
@@ -94,13 +87,24 @@ function enterLobby(socket) {
   socket.emit("lobby"); // TODO : delete this later
   lobby.push(socket);
 
+  socket.on("disconnect", () => {
+    lobby.splice(lobby.indexOf(socket), 1);
+    console.log(`${socket.id} disconnected.`);
+  });
+
+  socket.on("game:exit", () => {
+    socket.leave("gamesession");
+  });
+
   measureRttMilliseconds(socket);
 }
 
 // invite players to game session.
 function openGameSession() {
+  lobby.forEach((socket) => console.log(socket.id));
+
   lobby.forEach((socket) => {
-    socket.timeout(5000).emit("game:open", "open", (err, response) => {
+    socket.timeout(5000).emit("game:open", ONE_MINUTE / 2, (err, response) => {
       if (err) {
         console.log(`${socket.id} reject invitation. reason: ${err}`);
       } else {
@@ -113,7 +117,7 @@ function openGameSession() {
   // wait for one minute before starting game session
   setTimeout(() => {
     startGameSession();
-  }, ONE_MINUTE / 5);
+  }, ONE_MINUTE / 2);
 }
 
 /**
@@ -122,6 +126,6 @@ function openGameSession() {
 
 setInterval(() => {
   openGameSession();
-}, ONE_MINUTE / 6);
+}, ONE_MINUTE / 2);
 
 export { enterLobby };

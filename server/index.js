@@ -27,7 +27,12 @@ const app = express(); // express app for API
 const httpServer = http.createServer(app); // https server for socket.io
 export const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://localhost:5173",
+      "https://barmi-client.vercel.app",
+      "http://barmi-client.vercel.app",
+    ],
     methods: ["GET", "POST"],
   },
 }); // for bi-directional communication
@@ -46,7 +51,12 @@ app.use(
 );
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://localhost:5173",
+      "https://barmi-client.vercel.app",
+      "http://barmi-client.vercel.app",
+    ],
     credentials: true,
   })
 );
@@ -76,6 +86,7 @@ app.get("/bad-auth", (req, res) => {
 // socket.io
 // handler after connection
 io.on("connection", (socket) => {
+  console.log("a user connected", socket.id);
   enterLobby(socket);
 });
 

@@ -2,7 +2,7 @@ import { User } from "../db/models/user.js";
 import { Leaderboard } from "../db/models/leaderboard.js";
 
 export async function signupUser(req, res, next) {
-  const { username, password } = req.body;
+  const { username, password, fontstyle } = req.body;
 
   try {
     // Check if the username already exists
@@ -12,8 +12,12 @@ export async function signupUser(req, res, next) {
     }
 
     // Create a new user
-    const user = new User({ username, password });
-    await user.save();
+    try {
+      const user = new User({ username, password, fontstyle });
+      await user.save();
+    } catch (error) {
+      return res.status(400).json({ message: "lack of user information" });
+    }
 
     // Insert a new row in the leaderboard
     await Leaderboard.insertRow(username, 0, 0);
@@ -42,5 +46,5 @@ export async function storeFontStyle(req, res, next) {
   await user.save();
 
   // Send a success message as the response
-  res.status(200).json({ message: "font updated" });
+  return res.status(200).json({ message: "font updated" });
 }

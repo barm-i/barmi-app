@@ -31,7 +31,7 @@ export function apiRouter() {
   );
 
   // User info
-  router.post("/store_fontstyle", storeFontStyle);
+  router.post("/store_fontstyle", ensureAuthenticated, storeFontStyle);
 
   // Leaderboard
   router.get("/leaderboard/rows", requestRankRows);
