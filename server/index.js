@@ -25,7 +25,7 @@ const DB_URI = process.env.DB_URI;
 // server instance
 const app = express(); // express app for API
 const httpServer = http.createServer(app); // https server for socket.io
-const io = new Server(httpServer, {
+export const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:5173",
     methods: ["GET", "POST"],
@@ -76,7 +76,7 @@ app.get("/bad-auth", (req, res) => {
 // socket.io
 // handler after connection
 io.on("connection", (socket) => {
-  enterLobby(socket, io);
+  enterLobby(socket);
 });
 
 async function startServer() {
