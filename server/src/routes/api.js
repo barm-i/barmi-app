@@ -37,7 +37,6 @@ export function apiRouter() {
   router.post("/signup", signupUser);
   router.post(
     "/upload_image",
-    ensureAuthenticated,
     /* image middleware */ uploader.array("image", 2),
     async (req, res) => {
       const { text, flag } = req.body;
@@ -126,7 +125,7 @@ export function apiRouter() {
   );
 
   // User info
-  router.post("/store_fontstyle", ensureAuthenticated, storeFontStyle);
+  router.post("/store_fontstyle", storeFontStyle);
 
   // Leaderboard
   router.get("/leaderboard/rows", requestRankRows);
