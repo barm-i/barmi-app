@@ -1,7 +1,4 @@
-import { Router, response } from "express";
-import axios from "axios";
-import FormData from "form-data";
-import dotenv from "dotenv";
+import { Router } from "express";
 // controllers
 import { loginUser } from "../controllers/loginHandler.js";
 import { signupUser, storeFontStyle } from "../controllers/signupHandler.js";
@@ -12,9 +9,6 @@ import {
   updateMyPoint,
 } from "../controllers/leaderBoardHandler.js";
 import { clearDocuments } from "../controllers/clearDocumentsAll.js";
-
-// config env
-dotenv.config();
 
 // global router for api routes
 const router = Router();

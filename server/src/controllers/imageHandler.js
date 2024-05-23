@@ -1,6 +1,8 @@
 import multer from "multer";
 import path from "path";
 import dotenv from "dotenv";
+import FormData from "form-data";
+import axios from "axios";
 
 dotenv.config();
 
