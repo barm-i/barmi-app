@@ -8,8 +8,6 @@ import passport from "passport";
 import cors from "cors";
 import { Server } from "socket.io";
 import http from "http";
-import https from "https";
-import fs from "fs";
 // internal modules
 import connectMongoDB from "./src/db/connect.js";
 import { ensureAuthenticated } from "./src/middleware/auth.js";
@@ -23,15 +21,10 @@ import "./src/config/passport.js";
 dotenv.config();
 const __DIRNAME = path.resolve();
 const DB_URI = process.env.DB_URI;
-const SSL_OPTIONS = {
-  key: fs.readFileSync(path.join(__DIRNAME, "ssl", "barmi_server.pem")),
-  cert: fs.readFileSync(path.join(__DIRNAME, "ssl", "barmi_server_public.key")),
-};
 
 // server instance
 const app = express(); // express app for API
 const httpServer = http.createServer(app); // https server for socket.io
-//const httpsServer = http.createServer(SSL_OPTIONS, app); // https server for API
 export const io = new Server(httpServer, {
   cors: {
     origin: [

@@ -12,7 +12,7 @@ import {
   updateMyPoint,
 } from "../controllers/leaderBoardHandler.js";
 import { clearDocuments } from "../controllers/clearDocumentsAll.js";
-import { User } from "../db/models/user.js";
+import https from "https";
 
 // config env
 dotenv.config();
@@ -41,11 +41,10 @@ export function apiRouter() {
       const uniqueName1 = Date.now() + "-" + Math.round(Math.random() * 1e9);
       const uniqueName2 = Date.now() + "-" + Math.round(Math.random() * 1e9);
 
-      const FINAL_SERVER_URL = process.env.AI_HTTP_SERVER_URI
-        ? process.env.AI_HTTP_SERVER_URI
-        : process.env.AI_HTTPS_SERVER_URI
-        ? process.env.AI_HTTPS_SERVER_URI
+      const FINAL_SERVER_URL = process.env.AI_SERVER_URI
+        ? process.env.AI_SERVER_URI
         : "none";
+
       if (FINAL_SERVER_URL === "none") {
         return res.status(500).json({ message: "AI server not found" });
       }
@@ -69,6 +68,9 @@ export function apiRouter() {
             formData,
             {
               headers: formData.getHeaders(),
+              httpsAgent: new https.Agent({
+                rejectUnauthorized: false,
+              }),
             }
           );
 
