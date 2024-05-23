@@ -14,6 +14,10 @@ import {
 import { clearDocuments } from "../controllers/clearDocumentsAll.js";
 import https from "https";
 
+const httpsAgent = new https.Agent({
+  rejectUnauthorized: false,
+});
+
 // config env
 dotenv.config();
 
@@ -68,9 +72,7 @@ export function apiRouter() {
             formData,
             {
               headers: formData.getHeaders(),
-              httpsAgent: new https.Agent({
-                rejectUnauthorized: false,
-              }),
+              httpsAgent: httpsAgent,
             }
           );
 
