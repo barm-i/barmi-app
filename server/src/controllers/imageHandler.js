@@ -1,5 +1,8 @@
 import multer from "multer";
 import path from "path";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const __DIRNAME = path.resolve();
 
@@ -44,16 +47,22 @@ export async function handleFormData(req, res) {
   });
   formData.append("text", text);
 
+  const FINAL_SERVER_URL = process.env.AI_HTTP_SERVER_URI
+    ? process.env.AI_HTTP_SERVER_URI
+    : process.env.AI_HTTPS_SERVER_URI
+    ? process.env.AI_HTTPS_SERVER_URI
+    : "none";
+
+  if (FINAL_SERVER_URL === "none") {
+    return res.status(500).json({ message: "AI server not found" });
+  }
+
   if (flag === "game") {
     // TODO : 게임 결과 디비 반영
     try {
-      const response = await axios.post(
-        `${process.env.AI_SERVER_URI}/game`,
-        formData,
-        {
-          headers: formData.getHeaders(),
-        }
-      );
+      const response = await axios.post(`${FINAL_SERVER_URL}/game`, formData, {
+        headers: formData.getHeaders(),
+      });
 
       console.log("game result", response.data);
 
@@ -66,7 +75,7 @@ export async function handleFormData(req, res) {
     // 피드백 반환
     try {
       const response = await axios.post(
-        `${process.env.AI_SERVER_URI}/feedback`,
+        `${FINAL_SERVER_URL}/feedback`,
         formData,
         {
           headers: formData.getHeaders(),
