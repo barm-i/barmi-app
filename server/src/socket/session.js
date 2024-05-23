@@ -77,8 +77,11 @@ function startGameSession() {
 
     // 게임 종료
     // TODO : undefined error 발생
-    io.in("gamesession").emit("game:end");
+    io.to("gamesession").emit("game:end");
     io.emit("game:update");
+    for (let sock of lobby) {
+      sock.leave("gamesession");
+    }
   }, gameDuration);
 }
 
