@@ -117,7 +117,7 @@ function openGameSession() {
   // wait for one minute before starting game session
   setTimeout(() => {
     startGameSession();
-  }, ONE_MINUTE / 2);
+  }, 6000);
 }
 
 /**
@@ -126,6 +126,6 @@ function openGameSession() {
 
 setInterval(() => {
   openGameSession();
-}, ONE_MINUTE / 2);
+}, ONE_MINUTE * 1.2);
 
 export { enterLobby };
