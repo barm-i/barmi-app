@@ -103,7 +103,7 @@ function openGameSession() {
   lobby.forEach((socket) => console.log(socket.id));
 
   lobby.forEach((socket) => {
-    socket.timeout(5000).emit("game:open", ONE_MINUTE / 2, (err, response) => {
+    socket.timeout(5000).emit("game:open", 8000, (err, response) => {
       if (err) {
         console.log(`${socket.id} reject invitation. reason: ${err}`);
       } else {
@@ -116,7 +116,7 @@ function openGameSession() {
   // wait for one minute before starting game session
   setTimeout(() => {
     startGameSession();
-  }, 6000);
+  }, 8000);
 }
 
 /**
