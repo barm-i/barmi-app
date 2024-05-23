@@ -33,7 +33,7 @@ export async function storeFontStyle(req, res, next) {
   const { fontstyle, username } = req.body;
 
   // Get the user from the database
-  const user = await User.findOne(username);
+  const user = await User.findOne({ username });
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
