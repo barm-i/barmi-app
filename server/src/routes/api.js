@@ -92,6 +92,7 @@ export function apiRouter() {
             formData,
             {
               headers: formData.getHeaders(),
+              httpsAgent: httpsAgent,
             }
           );
 
