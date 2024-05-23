@@ -20,10 +20,7 @@ export async function signupUser(req, res, next) {
     }
 
     // Insert a new row in the leaderboard
-    await Leaderboard.insertRow(username, 0, 0);
-
-    // Reevaluate ranks
-    await Leaderboard.reevaluateRanks();
+    await Leaderboard.insertRow(username, 0);
 
     // Start a session for the user
     return res.status(201).json({ message: "Signed up successfully" });
