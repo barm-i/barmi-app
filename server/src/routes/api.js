@@ -13,6 +13,8 @@ import {
 } from "../controllers/leaderBoardHandler.js";
 import { clearDocuments } from "../controllers/clearDocumentsAll.js";
 import https from "https";
+import { Leaderboard } from "../db/models/leaderboard.js";
+import { User } from "../db/models/user.js";
 
 const httpsAgent = new https.Agent({
   rejectUnauthorized: false,
@@ -35,6 +37,7 @@ export function apiRouter() {
   router.post("/signup", signupUser);
   router.post(
     "/upload_image",
+    ensureAuthenticated,
     /* image middleware */ uploader.array("image", 2),
     async (req, res) => {
       const { text, flag } = req.body;
@@ -64,6 +67,7 @@ export function apiRouter() {
       });
       formData.append("text", text);
 
+      console.log("game result");
       if (flag === "game") {
         // TODO : 게임 결과 디비 반영
         try {
@@ -76,9 +80,18 @@ export function apiRouter() {
             }
           );
 
-          console.log("game result", response.data);
+          const score = response.data.score;
+          // find user
+          const username = req.user.username;
+          if (username === "") {
+            return res.status(404).json({ message: "User not found" });
+          }
+          // update score
+          Leaderboard.updateScore(username, score);
 
-          return res.status(200).json({ message: "game result updated" });
+          return res
+            .status(200)
+            .json({ message: "your handwriting sent to AI" });
         } catch (error) {
           console.log("cannot connect to AI server");
           console.error(error);
