@@ -30,10 +30,10 @@ export async function signupUser(req, res, next) {
 }
 
 export async function storeFontStyle(req, res, next) {
-  const { fontstyle } = req.body;
+  const { fontstyle, username } = req.body;
 
   // Get the user from the database
-  const user = await User.findById(req.user.id);
+  const user = await User.findOne(username);
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
