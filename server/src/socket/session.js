@@ -78,8 +78,7 @@ function startGameSession() {
     // 게임 종료
     // TODO : undefined error 발생
     io.in("gamesession").emit("game:end");
-    console.log("[log] : game end");
-    //TODO : 여기서 어떤 로직 ? 프론트 <-> 백 <-> ai 점수 업데이트 필요 , 랭크 업데이트, 피드백 전송
+    io.emit("game:update");
   }, gameDuration);
 }
 
