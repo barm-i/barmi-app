@@ -39,7 +39,7 @@ export function apiRouter() {
     "/upload_image",
     /* image middleware */ uploader.array("image", 2),
     async (req, res) => {
-      const { text, flag } = req.body;
+      const { text, flag, username } = req.body;
 
       // Create a new FormData instance
       const formData = new FormData();
@@ -81,7 +81,6 @@ export function apiRouter() {
 
           const score = response.data.score;
           // find user
-          const username = req.user.username;
           if (username === "") {
             return res.status(404).json({ message: "User not found" });
           }
