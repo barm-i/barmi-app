@@ -1,10 +1,17 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
+const FileSchema = new mongoose.Schema({
+  filename: { type: String, required: true },
+  date: { type: Date, default: Date.now },
+  url: { type: String, required: true },
+});
+
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   fontstyle: { type: String, required: true },
+  files: [FileSchema],
 });
 
 UserSchema.pre("save", async function (next) {

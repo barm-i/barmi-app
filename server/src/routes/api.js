@@ -2,10 +2,12 @@ import { Router } from "express";
 import axios from "axios";
 import FormData from "form-data";
 import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
 // controllers
 import { loginUser } from "../controllers/loginHandler.js";
 import { signupUser, storeFontStyle } from "../controllers/signupHandler.js";
-import { uploader } from "../controllers/imageHandler.js";
+import { uploader, uploadImageToCloud } from "../controllers/imageHandler.js";
 import { ensureAuthenticated } from "../middleware/auth.js";
 import {
   requestRankRows,
@@ -15,6 +17,8 @@ import { clearDocuments } from "../controllers/clearDocumentsAll.js";
 import https from "https";
 import { Leaderboard } from "../db/models/leaderboard.js";
 import { User } from "../db/models/user.js";
+
+import { getUserMetadata } from "../controllers/userData.js";
 
 const httpsAgent = new https.Agent({
   rejectUnauthorized: false,
@@ -47,6 +51,14 @@ export function apiRouter() {
       const uniqueName1 = Date.now() + "-" + Math.round(Math.random() * 1e9);
       const uniqueName2 = Date.now() + "-" + Math.round(Math.random() * 1e9);
 
+      uploadImageToCloud(
+        username,
+        req.files[0].buffer,
+        req.files[1].buffer,
+        uniqueName1,
+        uniqueName2
+      );
+
       const FINAL_SERVER_URL = process.env.AI_SERVER_URI
         ? process.env.AI_SERVER_URI
         : "none";
@@ -65,61 +77,62 @@ export function apiRouter() {
         contentType: req.files[1].mimetype,
       });
       formData.append("text", text);
+      res.sendStatus(200);
 
       console.log("game result");
-      if (flag === "game") {
-        // TODO : 게임 결과 디비 반영
-        try {
-          const response = await axios.post(
-            `${FINAL_SERVER_URL}/game`,
-            formData,
-            {
-              headers: formData.getHeaders(),
-              httpsAgent: httpsAgent,
-            }
-          );
+      // TODO : 주석해제
+      // if (flag === "game") {
+      //   // TODO : 게임 결과 디비 반영
+      //   try {
+      //     const response = await axios.post(
+      //       `${FINAL_SERVER_URL}/game`,
+      //       formData,
+      //       {
+      //         headers: formData.getHeaders(),
+      //         httpsAgent: httpsAgent,
+      //       }
+      //     );
 
-          const score = response.data.score;
-          // find user
-          if (username === "") {
-            return res.status(404).json({ message: "User not found" });
-          }
-          // update score
-          Leaderboard.updateScore(username, score);
+      //     const score = response.data.score;
+      //     // find user
+      //     if (username === "") {
+      //       return res.status(404).json({ message: "User not found" });
+      //     }
+      //     // update score
+      //     Leaderboard.updateScore(username, score);
 
-          return res
-            .status(200)
-            .json({ message: "your handwriting sent to AI" });
-        } catch (error) {
-          console.log("cannot connect to AI server");
-          console.error(error);
-          return res.sendStatus(500);
-        }
-      } else {
-        // 피드백 반환
-        try {
-          const response = await axios.post(
-            `${FINAL_SERVER_URL}/feedback`,
-            formData,
-            {
-              headers: formData.getHeaders(),
-              httpsAgent: httpsAgent,
-            }
-          );
+      //     return res
+      //       .status(200)
+      //       .json({ message: "your handwriting sent to AI" });
+      //   } catch (error) {
+      //     console.error(error);
+      //     console.log("cannot connect to AI server");
+      //     return res.sendStatus(500);
+      //   }
+      // } else {
+      //   try {
+      //     const response = await axios.post(
+      //       `${FINAL_SERVER_URL}/feedback`,
+      //       formData,
+      //       {
+      //         headers: formData.getHeaders(),
+      //         httpsAgent: httpsAgent,
+      //       }
+      //     );
 
-          if (response.data.feedbacks) {
-            response.data.feedbacks.forEach((feedback) => {
-              console.log(feedback.feedback, feedback.coordinates);
-            });
-          }
+      //     if (response.data.feedbacks) {
+      //       response.data.feedbacks.forEach((feedback) => {
+      //         console.log(feedback.feedback, feedback.coordinates);
+      //       });
+      //     }
 
-          return res.status(200).json(response.data);
-        } catch (error) {
-          console.error(error);
-          console.log("cannot connect to AI server");
-          return res.sendStatus(500);
-        }
-      }
+      //     return res.status(200).json(response.data);
+      //   } catch (error) {
+      //     console.error(error);
+      //     console.log("cannot connect to AI server");
+      //     return res.sendStatus(500);
+      //   }
+      // }
     }
   );
 
@@ -129,6 +142,12 @@ export function apiRouter() {
   // Leaderboard
   router.get("/leaderboard/rows", requestRankRows);
   router.post("/leaderboard/update_me", ensureAuthenticated, updateMyPoint);
+
+  // mypage
+  router.post("/mypage/metadata", getUserMetadata);
+
+  // font gen
+  router.post("/fontgen", async (req, res) => {});
 
   // !!!!!!DO NOT CALL!!!!!!
   router.delete(

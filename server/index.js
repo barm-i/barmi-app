@@ -14,6 +14,8 @@ import { ensureAuthenticated } from "./src/middleware/auth.js";
 import { enterLobby } from "./src/socket/session.js";
 // api router
 import { apiRouter } from "./src/routes/api.js";
+import { v2 as cloudinary } from "cloudinary";
+
 // scripts
 import "./src/config/passport.js";
 
@@ -93,6 +95,13 @@ io.on("connection", (socket) => {
 async function startServer() {
   try {
     await connectMongoDB(DB_URI);
+    // config cloudinary
+    cloudinary.config({
+      cloud_name: "dm0dhix15",
+      api_key: "336637532331791",
+      api_secret: process.env.CLOUDINARY_SECRET, // Click 'View Credentials' below to copy your API secret
+    });
+
     httpServer.listen(process.env.PORT, () => {
       console.log(`server is running on port ${process.env.PORT}`);
     });
