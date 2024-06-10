@@ -1,4 +1,5 @@
 import { io } from "../../index.js";
+import { Leaderboard } from "../db/models/leaderboard.js";
 
 const lobby = [];
 const TEN_MINUTES = 1000 * 60 * 10;
@@ -50,14 +51,14 @@ function measureRttMilliseconds(socket) {
 // ----------------------------------------
 
 // start game session
-function startGameSession() {
+async function startGameSession() {
   // TODO : implement game logic
   console.log("game started.");
   io.in("gamesession").emit("game:start", {
     message: "Welcome to game session!",
   });
 
-  const gameDuration = ONE_MINUTE;
+  const gameDuration = ONE_MINUTE / 4;
   let inverseElapsedTime = gameDuration;
 
   // 1초 마다 시간 감소
@@ -71,17 +72,32 @@ function startGameSession() {
     });
   }, gameDuration / 2);
 
+  const previousLeaderboard = await Leaderboard.find().sort({ point: -1 });
   setTimeout(() => {
     clearInterval(decrementTime);
     clearInterval(syncServerTime);
 
     // 게임 종료
-    // TODO : undefined error 발생
-    io.to("gamesession").emit("game:end");
-    io.emit("game:update");
-    for (let sock of lobby) {
-      sock.leave("gamesession");
-    }
+    // score query
+    Leaderboard.find()
+      .sort({ point: -1 })
+      .then((leaderboard) => {
+        const deltaScores = leaderboard.map((user, index) => {
+          const previousUser = previousLeaderboard.find(
+            (prevUser) => prevUser.username === user.username
+          );
+          return {
+            username: user.username,
+            deltaScore: user.point - (previousUser ? previousUser.point : 0),
+          };
+        });
+        io.to("gamesession").emit("game:end", { deltaScores });
+        io.emit("game:update");
+
+        for (let sock of lobby) {
+          sock.leave("gamesession");
+        }
+      });
   }, gameDuration);
 }
 
@@ -128,6 +144,6 @@ function openGameSession() {
 
 setInterval(() => {
   openGameSession();
-}, ONE_MINUTE * 2);
+}, ONE_MINUTE / 2);
 
 export { enterLobby };

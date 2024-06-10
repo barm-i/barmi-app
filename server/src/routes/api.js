@@ -80,59 +80,56 @@ export function apiRouter() {
       res.sendStatus(200);
 
       console.log("game result");
-      // TODO : 주석해제
-      // if (flag === "game") {
-      //   // TODO : 게임 결과 디비 반영
-      //   try {
-      //     const response = await axios.post(
-      //       `${FINAL_SERVER_URL}/game`,
-      //       formData,
-      //       {
-      //         headers: formData.getHeaders(),
-      //         httpsAgent: httpsAgent,
-      //       }
-      //     );
 
-      //     const score = response.data.score;
-      //     // find user
-      //     if (username === "") {
-      //       return res.status(404).json({ message: "User not found" });
-      //     }
-      //     // update score
-      //     Leaderboard.updateScore(username, score);
+      if (flag === "game") {
+        try {
+          const response = await axios.post(
+            `${FINAL_SERVER_URL}/game`,
+            formData,
+            {
+              headers: formData.getHeaders(),
+              httpsAgent: httpsAgent,
+            }
+          );
 
-      //     return res
-      //       .status(200)
-      //       .json({ message: "your handwriting sent to AI" });
-      //   } catch (error) {
-      //     console.error(error);
-      //     console.log("cannot connect to AI server");
-      //     return res.sendStatus(500);
-      //   }
-      // } else {
-      //   try {
-      //     const response = await axios.post(
-      //       `${FINAL_SERVER_URL}/feedback`,
-      //       formData,
-      //       {
-      //         headers: formData.getHeaders(),
-      //         httpsAgent: httpsAgent,
-      //       }
-      //     );
+          const score = response.data.score;
+          // find user
+          if (username === "") {
+            return res.status(404).json({ message: "User not found" });
+          }
+          // update score
+          Leaderboard.updateScore(username, score);
 
-      //     if (response.data.feedbacks) {
-      //       response.data.feedbacks.forEach((feedback) => {
-      //         console.log(feedback.feedback, feedback.coordinates);
-      //       });
-      //     }
+          return res.status(200).json({ score });
+        } catch (error) {
+          console.error(error);
+          console.log("cannot connect to AI server");
+          return res.sendStatus(500);
+        }
+      } else {
+        try {
+          const response = await axios.post(
+            `${FINAL_SERVER_URL}/feedback`,
+            formData,
+            {
+              headers: formData.getHeaders(),
+              httpsAgent: httpsAgent,
+            }
+          );
 
-      //     return res.status(200).json(response.data);
-      //   } catch (error) {
-      //     console.error(error);
-      //     console.log("cannot connect to AI server");
-      //     return res.sendStatus(500);
-      //   }
-      // }
+          if (response.data.feedbacks) {
+            response.data.feedbacks.forEach((feedback) => {
+              console.log(feedback.feedback, feedback.coordinates);
+            });
+          }
+
+          return res.status(200).json(response.data);
+        } catch (error) {
+          console.error(error);
+          console.log("cannot connect to AI server");
+          return res.sendStatus(500);
+        }
+      }
     }
   );
 
