@@ -58,7 +58,7 @@ async function startGameSession() {
     message: "Welcome to game session!",
   });
 
-  const gameDuration = ONE_MINUTE / 4;
+  const gameDuration = ONE_MINUTE;
   let inverseElapsedTime = gameDuration;
 
   // 1초 마다 시간 감소
@@ -144,6 +144,6 @@ function openGameSession() {
 
 setInterval(() => {
   openGameSession();
-}, ONE_MINUTE / 2);
+}, ONE_MINUTE);
 
 export { enterLobby };
