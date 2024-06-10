@@ -7,7 +7,7 @@ import path from "path";
 // controllers
 import { loginUser } from "../controllers/loginHandler.js";
 import { signupUser, storeFontStyle } from "../controllers/signupHandler.js";
-import { uploader } from "../controllers/imageHandler.js"; // TODO: upload image
+import { uploader, uploadImageToCloud } from "../controllers/imageHandler.js";
 import { ensureAuthenticated } from "../middleware/auth.js";
 import {
   requestRankRows,
@@ -51,13 +51,13 @@ export function apiRouter() {
       const uniqueName1 = Date.now() + "-" + Math.round(Math.random() * 1e9);
       const uniqueName2 = Date.now() + "-" + Math.round(Math.random() * 1e9);
 
-      // uploadImageToCloud(
-      //   username,
-      //   req.files[0].buffer,
-      //   req.files[1].buffer,
-      //   uniqueName1,
-      //   uniqueName2
-      // );
+      uploadImageToCloud(
+        username,
+        req.files[0].buffer,
+        req.files[1].buffer,
+        uniqueName1,
+        uniqueName2
+      );
 
       const FINAL_SERVER_URL = process.env.AI_SERVER_URI
         ? process.env.AI_SERVER_URI

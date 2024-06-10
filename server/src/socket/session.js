@@ -71,18 +71,38 @@ function startGameSession() {
     });
   }, gameDuration / 2);
 
-  setTimeout(() => {
-    clearInterval(decrementTime);
-    clearInterval(syncServerTime);
+  // previous leader board
+  Leaderboard.find()
+    .sort({ point: -1 })
+    .then((previousLeaderboard) => {
+      setTimeout(() => {
+        clearInterval(decrementTime);
+        clearInterval(syncServerTime);
 
-    // 게임 종료
-    // TODO : undefined error 발생
-    io.to("gamesession").emit("game:end");
-    io.emit("game:update");
-    for (let sock of lobby) {
-      sock.leave("gamesession");
-    }
-  }, gameDuration);
+        // 게임 종료
+        // leader board after game
+        Leaderboard.find()
+          .sort({ point: -1 })
+          .then((leaderboard) => {
+            const deltaScores = leaderboard.map((user, index) => {
+              const previousUser = previousLeaderboard.find(
+                (prevUser) => prevUser.username === user.username
+              );
+              return {
+                username: user.username,
+                deltaScore:
+                  user.point - (previousUser ? previousUser.point : 0),
+              };
+            });
+            io.to("gamesession").emit("game:end", { deltaScores });
+            io.emit("game:update");
+
+            for (let sock of lobby) {
+              sock.leave("gamesession");
+            }
+          });
+      }, gameDuration);
+    });
 }
 
 function enterLobby(socket) {
@@ -131,31 +151,3 @@ setInterval(() => {
 }, ONE_MINUTE * 2);
 
 export { enterLobby };
-
-// const previousLeaderboard = await Leaderboard.find().sort({ point: -1 });
-// setTimeout(() => {
-//   clearInterval(decrementTime);
-//   clearInterval(syncServerTime);
-
-//   // 게임 종료
-//   // score query
-//   Leaderboard.find()
-//     .sort({ point: -1 })
-//     .then((leaderboard) => {
-//       const deltaScores = leaderboard.map((user, index) => {
-//         const previousUser = previousLeaderboard.find(
-//           (prevUser) => prevUser.username === user.username
-//         );
-//         return {
-//           username: user.username,
-//           deltaScore: user.point - (previousUser ? previousUser.point : 0),
-//         };
-//       });
-//       io.to("gamesession").emit("game:end", { deltaScores });
-//       io.emit("game:update");
-
-//       for (let sock of lobby) {
-//         sock.leave("gamesession");
-//       }
-//     });
-// }, gameDuration);
