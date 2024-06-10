@@ -7,7 +7,7 @@ import path from "path";
 // controllers
 import { loginUser } from "../controllers/loginHandler.js";
 import { signupUser, storeFontStyle } from "../controllers/signupHandler.js";
-import { uploader, uploadImageToCloud } from "../controllers/imageHandler.js";
+import { uploader } from "../controllers/imageHandler.js"; // TODO: upload image
 import { ensureAuthenticated } from "../middleware/auth.js";
 import {
   requestRankRows,
@@ -77,7 +77,6 @@ export function apiRouter() {
         contentType: req.files[1].mimetype,
       });
       formData.append("text", text);
-      res.sendStatus(200);
 
       console.log("game result");
 
