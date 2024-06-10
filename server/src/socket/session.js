@@ -1,4 +1,5 @@
 import { io } from "../../index.js";
+import { Leaderboard } from "../db/models/leaderboard.js";
 
 const lobby = [];
 const TEN_MINUTES = 1000 * 60 * 10;
