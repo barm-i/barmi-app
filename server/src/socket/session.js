@@ -1,5 +1,4 @@
 import { io } from "../../index.js";
-import { Leaderboard } from "../db/models/leaderboard.js";
 
 const lobby = [];
 const TEN_MINUTES = 1000 * 60 * 10;
@@ -51,7 +50,7 @@ function measureRttMilliseconds(socket) {
 // ----------------------------------------
 
 // start game session
-async function startGameSession() {
+function startGameSession() {
   // TODO : implement game logic
   console.log("game started.");
   io.in("gamesession").emit("game:start", {
@@ -72,32 +71,17 @@ async function startGameSession() {
     });
   }, gameDuration / 2);
 
-  const previousLeaderboard = await Leaderboard.find().sort({ point: -1 });
   setTimeout(() => {
     clearInterval(decrementTime);
     clearInterval(syncServerTime);
 
     // 게임 종료
-    // score query
-    Leaderboard.find()
-      .sort({ point: -1 })
-      .then((leaderboard) => {
-        const deltaScores = leaderboard.map((user, index) => {
-          const previousUser = previousLeaderboard.find(
-            (prevUser) => prevUser.username === user.username
-          );
-          return {
-            username: user.username,
-            deltaScore: user.point - (previousUser ? previousUser.point : 0),
-          };
-        });
-        io.to("gamesession").emit("game:end", { deltaScores });
-        io.emit("game:update");
-
-        for (let sock of lobby) {
-          sock.leave("gamesession");
-        }
-      });
+    // TODO : undefined error 발생
+    io.to("gamesession").emit("game:end");
+    io.emit("game:update");
+    for (let sock of lobby) {
+      sock.leave("gamesession");
+    }
   }, gameDuration);
 }
 
@@ -144,6 +128,34 @@ function openGameSession() {
 
 setInterval(() => {
   openGameSession();
-}, ONE_MINUTE);
+}, ONE_MINUTE * 2);
 
 export { enterLobby };
+
+// const previousLeaderboard = await Leaderboard.find().sort({ point: -1 });
+// setTimeout(() => {
+//   clearInterval(decrementTime);
+//   clearInterval(syncServerTime);
+
+//   // 게임 종료
+//   // score query
+//   Leaderboard.find()
+//     .sort({ point: -1 })
+//     .then((leaderboard) => {
+//       const deltaScores = leaderboard.map((user, index) => {
+//         const previousUser = previousLeaderboard.find(
+//           (prevUser) => prevUser.username === user.username
+//         );
+//         return {
+//           username: user.username,
+//           deltaScore: user.point - (previousUser ? previousUser.point : 0),
+//         };
+//       });
+//       io.to("gamesession").emit("game:end", { deltaScores });
+//       io.emit("game:update");
+
+//       for (let sock of lobby) {
+//         sock.leave("gamesession");
+//       }
+//     });
+// }, gameDuration);
