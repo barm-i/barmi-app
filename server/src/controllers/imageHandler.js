@@ -8,7 +8,7 @@ dotenv.config();
 
 const __DIRNAME = path.resolve();
 
-export const uploadImageToCloud = (
+export const uploadImageToCloud = async (
   username,
   buffer1,
   buffer2,
@@ -20,52 +20,37 @@ export const uploadImageToCloud = (
   const fileStr1 = buffer1.toString("base64");
   const fileStr2 = buffer2.toString("base64");
 
-  // upload to cloudinary
-  const upload1 = new Promise((resolve, reject) => {
-    cloudinary.uploader.upload(
+  try {
+    // upload to cloudinary
+    const upload1 = cloudinary.uploader.upload(
       `data:image/png;base64,${fileStr1}`,
-      { public_id: `${username}/${uniqueName1}` },
-      (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result.url);
-        }
-      }
+      { public_id: `${username}/${uniqueName1}` }
     );
-  });
-  const upload2 = new Promise((resolve, reject) => {
-    cloudinary.uploader.upload(
+    const upload2 = cloudinary.uploader.upload(
       `data:image/png;base64,${fileStr2}`,
-      { public_id: `${username}/${uniqueName2}` },
-      (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result.url);
-        }
-      }
+      { public_id: `${username}/${uniqueName2}` }
     );
-  });
 
-  Promise.all([upload1, upload2])
-    .then(([url1, url2]) => {
-      console.log("url1", url1);
-      const file1 = { filename: uniqueName1, date: new Date(), url: url1 };
-      const file2 = { filename: uniqueName2, date: new Date(), url: url2 };
+    const [url1, url2] = await Promise.all([upload1, upload2]);
 
-      User.findOneAndUpdate({ username: username }).then((user) => {
-        if (user) {
-          user.files.push(file1);
-          user.files.push(file2);
-          user.save();
-        }
-      });
-    })
-    .catch((err) => {
-      // An error occurred during one of the uploads
-      console.error(err);
-    });
+    console.log("url1", url1);
+    const file1 = { filename: uniqueName1, date: new Date(), url: url1 };
+    const file2 = { filename: uniqueName2, date: new Date(), url: url2 };
+
+    const user = await User.findOne({ username: username });
+
+    if (user) {
+      user.files.push(file1);
+      user.files.push(file2);
+      await user.save();
+    } else {
+      // Handle the case where the user does not exist
+      console.error(`User with username ${username} does not exist.`);
+    }
+  } catch (err) {
+    // An error occurred during one of the uploads or the database operation
+    console.error(err);
+  }
 };
 
 export const uploader = multer({
