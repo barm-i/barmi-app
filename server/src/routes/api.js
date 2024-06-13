@@ -17,10 +17,9 @@ import {
 import { clearDocuments } from "../controllers/clearDocumentsAll.js";
 import https from "https";
 import { Leaderboard } from "../db/models/leaderboard.js";
-import { User } from "../db/models/user.js";
-import { sendText } from "../controllers/fontGenController.js";
 
 import { getUserMetadata } from "../controllers/userData.js";
+import { uploadGenImageToCloud } from "../controllers/imageHandler.js";
 
 export const httpsAgent = new https.Agent({
   rejectUnauthorized: false,
@@ -204,11 +203,22 @@ export function apiRouter() {
           "Content-Type": "application/json",
         },
         httpsAgent: httpsAgent,
+        responseType: "arraybuffer", // Set the responseType to 'arraybuffer' to receive the response data as a Buffer
       }
     );
 
     if (response.status === 200) {
-      return res.status(200).json({ message: "Text sent successfully" });
+      const __dirname = path.resolve();
+      const filePath = path.join(__dirname, "public/gen/output.png"); // Replace 'output.png' with the desired file name
+      fs.writeFileSync(filePath, response.data, (err) => {
+        if (err) {
+          console.error(`Error writing file: ${err}`);
+        } else {
+          console.log(`File written to ${filePath}`);
+        }
+      });
+      const url = await uploadGenImageToCloud();
+      res.status(200).json({ url });
     } else {
       return res.status(500).json({ message: "error while sending" });
     }
