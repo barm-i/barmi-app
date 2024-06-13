@@ -18,10 +18,11 @@ import { clearDocuments } from "../controllers/clearDocumentsAll.js";
 import https from "https";
 import { Leaderboard } from "../db/models/leaderboard.js";
 import { User } from "../db/models/user.js";
+import { sendText } from "../controllers/fontGenController.js";
 
 import { getUserMetadata } from "../controllers/userData.js";
 
-const httpsAgent = new https.Agent({
+export const httpsAgent = new https.Agent({
   rejectUnauthorized: false,
 });
 
@@ -144,8 +145,74 @@ export function apiRouter() {
   // mypage
   router.post("/mypage/metadata", getUserMetadata);
 
-  // font gen
-  router.post("/fontgen", async (req, res) => {});
+  // font generation
+  // font template send
+  router.post(
+    "/fontgen/gen",
+    /* image middleware */ uploader.array("files", 3),
+    async (req, res) => {
+      // Create a new FormData instance
+      const formData = new FormData();
+
+      const [file1, file2, file3] = req.files;
+
+      const API_URL = "https://175.196.97.78:6259/upload_reference";
+
+      //Append the images and textContent to formData
+      formData.append("files", file1.buffer, {
+        filename: "h1",
+        contentType: file1.mimetype,
+      });
+      formData.append("files", file2.buffer, {
+        filename: "h2",
+        contentType: file2.mimetype,
+      });
+      formData.append("files", file3.buffer, {
+        filename: "h3",
+        contentType: file3.mimetype,
+      });
+
+      try {
+        const response = await axios.post(API_URL, formData, {
+          headers: formData.getHeaders(),
+          httpsAgent: httpsAgent,
+        });
+
+        if (response.status === 200) {
+          return res
+            .status(200)
+            .json({ message: "handwritings sent successfully" });
+        } else {
+          return res.status(500).json({ message: "error while sending" });
+        }
+      } catch (error) {
+        console.error(error);
+        console.log("cannot connect to AI server");
+        return res.sendStatus(500);
+      }
+    }
+  );
+  // font text test
+  router.post("/fontgen/test", async (req, res) => {
+    const { text } = req.body;
+
+    const response = await axios.post(
+      "https://175.196.97.78:6259/generate_image",
+      { text },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        httpsAgent: httpsAgent,
+      }
+    );
+
+    if (response.status === 200) {
+      return res.status(200).json({ message: "Text sent successfully" });
+    } else {
+      return res.status(500).json({ message: "error while sending" });
+    }
+  });
 
   // !!!!!!DO NOT CALL!!!!!!
   router.delete(
