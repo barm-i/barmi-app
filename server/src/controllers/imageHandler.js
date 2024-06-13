@@ -15,8 +15,6 @@ export const uploadImageToCloud = async (
   uniqueName1,
   uniqueName2
 ) => {
-  const dir = path.join(__DIRNAME, "/public/records", username);
-
   const fileStr1 = buffer1.toString("base64");
   const fileStr2 = buffer2.toString("base64");
 
@@ -33,9 +31,8 @@ export const uploadImageToCloud = async (
 
     const [url1, url2] = await Promise.all([upload1, upload2]);
 
-    console.log("url1", url1);
-    const file1 = { filename: uniqueName1, date: new Date(), url: url1 };
-    const file2 = { filename: uniqueName2, date: new Date(), url: url2 };
+    const file1 = { filename: uniqueName1, date: new Date(), url: url1.url };
+    const file2 = { filename: uniqueName2, date: new Date(), url: url2.url };
 
     const user = await User.findOne({ username: username });
 
