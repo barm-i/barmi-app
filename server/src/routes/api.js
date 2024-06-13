@@ -12,6 +12,7 @@ import { ensureAuthenticated } from "../middleware/auth.js";
 import {
   requestRankRows,
   updateMyPoint,
+  getAUserPoint,
 } from "../controllers/leaderBoardHandler.js";
 import { clearDocuments } from "../controllers/clearDocumentsAll.js";
 import https from "https";
@@ -137,6 +138,7 @@ export function apiRouter() {
 
   // Leaderboard
   router.get("/leaderboard/rows", requestRankRows);
+  router.post("/leaderboard/get_point", getAUserPoint);
   router.post("/leaderboard/update_me", ensureAuthenticated, updateMyPoint);
 
   // mypage
