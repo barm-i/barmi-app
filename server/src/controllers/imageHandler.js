@@ -8,11 +8,12 @@ dotenv.config();
 
 const __DIRNAME = path.resolve();
 
-export const uploadGenImageToCloud = async () => {
+export const uploadGenImageToCloud = async (buffer) => {
+  const fileStr = buffer.toString("base64");
   // upload to cloudinary
   const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
   const upload = cloudinary.uploader.upload(
-    `${__DIRNAME}/public/gen/output.png`,
+    `data:image/png;base64,${fileStr}`,
     { public_id: `gen/${unique}` }
   );
 

@@ -208,16 +208,7 @@ export function apiRouter() {
     );
 
     if (response.status === 200) {
-      const __dirname = path.resolve();
-      const filePath = path.join(__dirname, "public/gen/output.png"); // Replace 'output.png' with the desired file name
-      fs.writeFileSync(filePath, response.data, (err) => {
-        if (err) {
-          console.error(`Error writing file: ${err}`);
-        } else {
-          console.log(`File written to ${filePath}`);
-        }
-      });
-      const url = await uploadGenImageToCloud();
+      const url = await uploadGenImageToCloud(response.data);
       res.status(200).json({ url });
     } else {
       return res.status(500).json({ message: "error while sending" });
